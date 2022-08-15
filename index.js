@@ -15,7 +15,7 @@ const local_chat_db={}
 const io = require('socket.io')(server, {cors: {origin: "*"}});
 app.get('/', (req, res) => {
   console.log("working");
-  res.send(200);
+  res.send("working");
 })
 //start
 app.post('/contact', (req, res) => {
@@ -45,6 +45,6 @@ io.on('connection', (socket) => {
                   })
 });
 
-server.listen(3001, () => {
+server.listen(3000, () => {
   console.log('listening on *:3000');
 });
