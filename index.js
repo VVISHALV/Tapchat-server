@@ -33,18 +33,43 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
                     console.log('user disconnected');
                   });
-                  io.to(socket.id).emit('getdata',socket.id);
                     
                   socket.on('chat', (msg) => {
                     console.log(msg)
-                    io.emit('chat', msg);
+                    io.to(local_users_db[msg.receiver_email]).emit('chat',msg);
+                    io.to(local_users_db[msg.sender_email]).emit('chat',msg);
+                  
+                    const convo_key=`${msg.sender_email}->${msg.receiver_email}`
+                    if(convo_key in local_chat_db){
+                      local_chat_db[convo_key].push(msg)
+                    }
+                    else{
+                      local_chat_db[convo_key]=[msg];
+                    }
+                    const convo_key1=`${msg.receiver_email}->${msg.sender_email}`
+                    if(convo_key1 in local_chat_db){
+                      local_chat_db[convo_key1].push(msg)
+                    }
+                    else{
+                      local_chat_db[convo_key1]=[msg];
+                    }
+                    console.log(local_chat_db)
+                    // io.emit('chat', msg);
                   });
                   socket.on("setusers",(data)=>{
                     local_users_db[data.email]=data.id;
                     console.log(local_users_db)
                   })
+                  socket.on("contact",(msg)=>{
+                    console.log("oncontact");
+                    console.log("contact",msg);
+                    const convo_key=`${msg.sender_email}->${msg.receiver_email}`
+                    const conversation=convo_key in local_chat_db?local_chat_db[convo_key]:[];
+                    io.to(local_users_db[msg.sender_email]).emit('convo',conversation);
+                  
+                  })
 });
 
-server.listen(3000, () => {
+server.listen(3001, () => {
   console.log('listening on *:3000');
 });
