@@ -13,7 +13,10 @@ const local_chat_db={}
 
 // const io = new Server(server);
 const io = require('socket.io')(server, {cors: {origin: "*"}});
-
+app.get('/', (req, res) => {
+  console.log("working");
+  res.send(200);
+})
 //start
 app.post('/contact', (req, res) => {
 console.log(req.body);
